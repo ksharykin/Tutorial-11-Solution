@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
+namespace AnonPosters.API.Models;
+
+[PrimaryKey(nameof(Id))]
+public class User
+{
+    public int Id { get; set; }
+    
+    [MaxLength(50)]
+    public required string Username { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
+    
+    public ICollection<Post> Posts { get; set; } = new List<Post>();
+}
