@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Connection string not found");
+var connectionString = builder.Configuration.GetConnectionString("PosterDB") ?? throw new Exception("Connection string not found");
 // Add services to the container.
 builder.Services.AddDbContext<AnonPostersContext>(options => options.UseSqlServer(connectionString));
 

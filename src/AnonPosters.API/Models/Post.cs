@@ -12,7 +12,8 @@ public class Post
     [MaxLength(250)]
     public required string Content { get; set; }
     
-    public required string Roles { get; set; }
-    
     public DateTime CreatedAt { get; set; }
+    
+    public int UserId { get; set; }
+    public User User { get; set; }
 }

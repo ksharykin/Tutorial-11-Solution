@@ -12,6 +12,11 @@ public class AnonPostersContext : DbContext
     public AnonPostersContext(DbContextOptions<AnonPostersContext> options) : base(options)
     {
     }
-    
-    
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>();
+    }
 }

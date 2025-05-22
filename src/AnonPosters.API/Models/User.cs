@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AnonPosters.API.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnonPosters.API.Models;
@@ -12,6 +13,8 @@ public class User
     public required string Username { get; set; }
     
     public DateTime CreatedAt { get; set; }
+    
+    public Role Role { get; set; }
     
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }
