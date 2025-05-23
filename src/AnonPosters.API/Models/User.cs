@@ -12,8 +12,10 @@ public class User
     [MaxLength(50)]
     public required string Username { get; set; }
     
-    public DateTime CreatedAt { get; set; }
+    [MaxLength(32)]
+    public required string Password { get; set; }
     
+    public DateTime CreatedAt { get; set; }
     public Role Role { get; set; }
     
     public ICollection<Post> Posts { get; set; } = new List<Post>();

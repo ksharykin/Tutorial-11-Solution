@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AnonPosters.API.DAL;
 using AnonPosters.API.DTOs;
+using AnonPosters.API.DTOs.Posts;
+using AnonPosters.API.DTOs.Users;
 using AnonPosters.API.Models;
 
 namespace AnonPosters.API.Controllers
