@@ -59,12 +59,16 @@ namespace AnonPosters.API.Controllers
         // PUT: api/Posts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPost(int id, Post post)
+        public async Task<IActionResult> PutPost(int id, CreatePostDto updatePost)
         {
-            if (id != post.Id)
+            var post = await _context.Post.FindAsync(id);
+            if (post == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+            
+            post.UserId = updatePost.UserId;
+            post.Content = updatePost.Content;
 
             _context.Entry(post).State = EntityState.Modified;
 
@@ -90,7 +94,7 @@ namespace AnonPosters.API.Controllers
         // POST: api/Posts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(CreatePostDto createPost)
+        public async Task<ActionResult> PostPost(CreatePostDto createPost)
         {
             var post = new Post
             {
@@ -101,7 +105,7 @@ namespace AnonPosters.API.Controllers
             _context.Post.Add(post);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
+            return CreatedAtAction("GetPost", new { id = post.Id });
         }
 
         // DELETE: api/Posts/5
