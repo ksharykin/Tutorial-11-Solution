@@ -1,6 +1,6 @@
-﻿namespace AnonPosters.API.DTOs;
+﻿namespace AnonPosters.API.DTOs.Posts;
 
-public class UserDto
+public class PostDto
 {
     public int Id { get; set; }
     

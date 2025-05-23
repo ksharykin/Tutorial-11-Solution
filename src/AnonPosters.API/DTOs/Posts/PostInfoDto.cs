@@ -1,4 +1,6 @@
-﻿namespace AnonPosters.API.DTOs;
+﻿using AnonPosters.API.DTOs.Users;
+
+namespace AnonPosters.API.DTOs.Posts;
 
 public class PostInfoDto
 {

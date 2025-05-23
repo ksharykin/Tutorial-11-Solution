@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AnonPosters.API.DTOs;
+namespace AnonPosters.API.DTOs.Posts;
 
 public class CreatePostDto
 {
