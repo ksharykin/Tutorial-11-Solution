@@ -7,115 +7,114 @@ using AnonPosters.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace AnonPosters.API.Controllers
+namespace AnonPosters.API.Controllers;
+
+[Route("api/users")]
+[Authorize]
+[ApiController]
+public class UsersController : ControllerBase
 {
-    [Route("api/users")]
-    [Authorize]
-    [ApiController]
-    public class UsersController : ControllerBase
-    {
-        private readonly PasswordHasher<User> _passwordHasher = new();
+    private readonly PasswordHasher<User> _passwordHasher = new();
         
-        private readonly AnonPostersContext _context;
+    private readonly AnonPostersContext _context;
 
-        public UsersController(AnonPostersContext context)
+    public UsersController(AnonPostersContext context)
+    {
+        _context = context;
+    }
+
+    // GET: api/Users
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<User>>> GetUser()
+    {
+        return await _context.User.ToListAsync();
+    }
+
+    // GET: api/Users/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<User>> GetUser(int id)
+    {
+        var user = await _context.User.FindAsync(id);
+
+        if (user == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        return user;
+    }
+
+    // PUT: api/Users/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutUser(int id, User user)
+    {
+        if (id != user.Id)
         {
-            return await _context.User.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            var user = await _context.User.FindAsync(id);
+        _context.Entry(user).State = EntityState.Modified;
 
-            if (user == null)
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!UserExists(id))
             {
                 return NotFound();
             }
-
-            return user;
+            else
+            {
+                throw;
+            }
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        return NoContent();
+    }
+
+    // POST: api/Users
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<ActionResult<UserDto>> PostUser(UserCredentialsDto userCredentials)
+    {
+        var user = new User
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
+            Username = userCredentials.Username,
+            Password = userCredentials.Password,
+            CreatedAt = DateTime.Now,
+            Role = Role.User
+        };
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ActionResult<UserDto>> PostUser(UserCredentialsDto userCredentials)
-        {
-            var user = new User
-            {
-                Username = userCredentials.Username,
-                Password = userCredentials.Password,
-                CreatedAt = DateTime.Now,
-                Role = Role.User
-            };
-
-            user.Password = _passwordHasher.HashPassword(user, userCredentials.Password);
+        user.Password = _passwordHasher.HashPassword(user, userCredentials.Password);
             
-            _context.User.Add(user);
-            await _context.SaveChangesAsync();
+        _context.User.Add(user);
+        await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, new UserDto {Username = user.Username, Id = user.Id});
-        }
+        return CreatedAtAction("GetUser", new { id = user.Id }, new UserDto {Username = user.Username, Id = user.Id});
+    }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+    // DELETE: api/Users/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var user = await _context.User.FindAsync(id);
+        if (user == null)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return NotFound();
         }
 
-        private bool UserExists(int id)
-        {
-            return _context.User.Any(e => e.Id == id);
-        }
+        _context.User.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    private bool UserExists(int id)
+    {
+        return _context.User.Any(e => e.Id == id);
     }
 }
