@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AnonPosters.API.DAL;
+using AnonPosters.API.DTOs.Users;
+using AnonPosters.API.Enums;
 using AnonPosters.API.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AnonPosters.API.Controllers
 {
@@ -14,6 +12,8 @@ namespace AnonPosters.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly PasswordHasher<User> _passwordHasher = new();
+        
         private readonly AnonPostersContext _context;
 
         public UsersController(AnonPostersContext context)
@@ -76,12 +76,22 @@ namespace AnonPosters.API.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<UserDto>> PostUser(UserCredentialsDto userCredentials)
         {
+            var user = new User
+            {
+                Username = userCredentials.Username,
+                Password = userCredentials.Password,
+                CreatedAt = DateTime.Now,
+                Role = Role.User
+            };
+
+            user.Password = _passwordHasher.HashPassword(user, userCredentials.Password);
+            
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetUser", new { id = user.Id }, new UserDto {Username = user.Username, Id = user.Id});
         }
 
         // DELETE: api/Users/5

@@ -1,10 +1,13 @@
-﻿namespace AnonPosters.API.Helpers.Options;
+﻿using Microsoft.Extensions.Options;
+
+namespace AnonPosters.API.Helpers.Options;
 
 public class JwtOptions
 {
     public const string ConfigKey = "Jwt";
     
-    public required string Issuer { get; set; }
-    public required string Audience { get; set; }
-    public required string Key { get; set; }
+    public required string Issuer { get; init; }
+    public required string Audience { get; init; }
+    public required string Key { get; init; }
+    public required int ValidInMinutes { get; init; }
 }

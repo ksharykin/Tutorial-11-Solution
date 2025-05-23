@@ -2,6 +2,6 @@
 
 public interface ITokenService
 {
-    void CreateToken(string username);
-    void RefreshToken(string token);
+    string CreateToken(string username);
+    string CreateRefreshToken();
 }

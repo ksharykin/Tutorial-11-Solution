@@ -1,6 +1,9 @@
 using AnonPosters.API.DAL;
+using AnonPosters.API.Helpers.Extensions;
 using AnonPosters.API.Helpers.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 // To perform code-first apporach we need to execute next commands:
 // dotnet ef migrations add InitialAnonPostersDB
@@ -16,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("PosterDB") ?? 
 // Add services to the container.
 builder.Services.AddDbContext<AnonPostersContext>(options => options.UseSqlServer(connectionString));
 builder.Services.Configure<JwtOptions>(jwtConfigData);
-
+builder.Services.AddJwt(jwtConfigData.Get<JwtOptions>() ?? throw new Exception("JWT configuration not found"));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
