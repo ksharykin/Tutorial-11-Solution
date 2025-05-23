@@ -3,6 +3,7 @@ using AnonPosters.API.DTOs.Tokens;
 using AnonPosters.API.DTOs.Users;
 using AnonPosters.API.Models;
 using AnonPosters.API.Services.Tokens;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace AnonPosters.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthController : ControllerBase
     {
         private readonly AnonPostersContext _context;

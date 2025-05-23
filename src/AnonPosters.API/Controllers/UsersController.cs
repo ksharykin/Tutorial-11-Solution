@@ -4,11 +4,13 @@ using AnonPosters.API.DAL;
 using AnonPosters.API.DTOs.Users;
 using AnonPosters.API.Enums;
 using AnonPosters.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace AnonPosters.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
+    [Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -76,6 +78,7 @@ namespace AnonPosters.API.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDto>> PostUser(UserCredentialsDto userCredentials)
         {
             var user = new User

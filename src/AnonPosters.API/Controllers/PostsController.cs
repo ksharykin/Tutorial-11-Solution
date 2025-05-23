@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AnonPosters.API.DAL;
-using AnonPosters.API.DTOs;
 using AnonPosters.API.DTOs.Posts;
 using AnonPosters.API.DTOs.Users;
 using AnonPosters.API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AnonPosters.API.Controllers
 {
     [Route("api/posts")]
+    [Authorize]
     [ApiController]
     public class PostsController : ControllerBase
     {
@@ -26,6 +22,7 @@ namespace AnonPosters.API.Controllers
 
         // GET: api/Posts
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<PostDto>>> GetPost()
         {
             var posts = await _context.Post.Include(p => p.User).ToListAsync();
@@ -35,6 +32,7 @@ namespace AnonPosters.API.Controllers
 
         // GET: api/Posts/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PostInfoDto>> GetPost(int id)
         {
             var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == id);

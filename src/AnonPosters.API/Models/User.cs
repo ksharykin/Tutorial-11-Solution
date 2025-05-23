@@ -12,7 +12,7 @@ public class User
     [MaxLength(50)]
     public required string Username { get; set; }
     
-    [MaxLength(32)]
+    [MaxLength(100)]
     public required string Password { get; set; }
     
     public DateTime CreatedAt { get; set; }
