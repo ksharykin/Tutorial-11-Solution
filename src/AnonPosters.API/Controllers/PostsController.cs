@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AnonPosters.API.DAL;
+using AnonPosters.API.DTOs;
 using AnonPosters.API.Models;
 
 namespace AnonPosters.API.Controllers
@@ -23,23 +24,36 @@ namespace AnonPosters.API.Controllers
 
         // GET: api/Posts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPost()
+        public async Task<ActionResult<IEnumerable<PostDto>>> GetPost()
         {
-            return await _context.Post.ToListAsync();
+            var posts = await _context.Post.Include(p => p.User).ToListAsync();
+            var mappedPosts = posts.Select(p => new PostDto {Id = p.Id, Username = p.User.Username});
+            return Ok(mappedPosts);
         }
 
         // GET: api/Posts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(int id)
+        public async Task<ActionResult<PostInfoDto>> GetPost(int id)
         {
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == id);
 
             if (post == null)
             {
                 return NotFound();
             }
 
-            return post;
+            var mappedPost = new PostInfoDto
+            {
+                User = new UserDto
+                {
+                    Id = post.User.Id,
+                    Username = post.User.Username,
+                },
+                CreatedAt = post.CreatedAt,
+                Content = post.Content
+            };
+
+            return Ok(mappedPost);
         }
 
         // PUT: api/Posts/5
@@ -76,8 +90,14 @@ namespace AnonPosters.API.Controllers
         // POST: api/Posts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
+        public async Task<ActionResult<Post>> PostPost(CreatePostDto createPost)
         {
+            var post = new Post
+            {
+                CreatedAt = DateTime.Now,
+                Content = createPost.Content,
+                UserId = createPost.UserId
+            };
             _context.Post.Add(post);
             await _context.SaveChangesAsync();
 
